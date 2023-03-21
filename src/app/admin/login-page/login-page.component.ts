@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { User } from 'src/app/shared/ineterfaces';
 import { AuthService } from '../shared/services/auth.service';
 
@@ -12,15 +12,25 @@ import { AuthService } from '../shared/services/auth.service';
 export class LoginPageComponent implements OnInit {
   public form: FormGroup;
   public submitted: boolean;
+  public message: string;
 
   constructor(
     private formBuilder: FormBuilder,
     public authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
+
+    this.route.queryParams.subscribe((params: Params) => {
+      if (params['loginAgain']) {
+        this.message = 'Пожалуйста, авторизируйтесь';
+      } else if (params['authFailed']) {
+        this.message = 'Сессия истекла. Введите данные заного';
+      }
+    });
   }
 
   public initializeForm(): void {
@@ -37,7 +47,6 @@ export class LoginPageComponent implements OnInit {
   }
 
   public submit() {
-    console.log(this.form, 'this.form');
     this.submitted = true;
     if (this.form.invalid) {
       return;
@@ -50,9 +59,9 @@ export class LoginPageComponent implements OnInit {
 
     this.authService.login(user).subscribe({
       next: () => {
-        this.form.reset();
         this.submitted = false;
         this.router.navigate(['/admin', 'dashboard']);
+        this.form.reset();
       },
       error: () => {
         this.submitted = false;

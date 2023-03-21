@@ -7,8 +7,9 @@ import { DashboardPageComponent } from './dashboard-page/dashboard-page.componen
 import { CreatePageComponent } from './create-page/create-page.component';
 import { EditPageComponent } from './edit-page/edit-page.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from './shared/services/auth.service';
 import { SharedModule } from '../shared/shared.module';
+import { authGuard } from './shared/services/auth.guard';
+import { SearchPipe } from './shared/pipes/search.pipe';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { SharedModule } from '../shared/shared.module';
     DashboardPageComponent,
     CreatePageComponent,
     EditPageComponent,
+    SearchPipe,
   ],
   imports: [
     CommonModule,
@@ -27,9 +29,21 @@ import { SharedModule } from '../shared/shared.module';
         children: [
           { path: '', redirectTo: '/admin/login', pathMatch: 'full' },
           { path: 'login', component: LoginPageComponent },
-          { path: 'dashboard', component: DashboardPageComponent },
-          { path: 'create', component: CreatePageComponent },
-          { path: 'post/:id/edit', component: EditPageComponent },
+          {
+            path: 'dashboard',
+            component: DashboardPageComponent,
+            canActivate: [authGuard],
+          },
+          {
+            path: 'create',
+            component: CreatePageComponent,
+            canActivate: [authGuard],
+          },
+          {
+            path: 'post/:id/edit',
+            component: EditPageComponent,
+            canActivate: [authGuard],
+          },
         ],
       },
     ]),
@@ -37,7 +51,7 @@ import { SharedModule } from '../shared/shared.module';
     ReactiveFormsModule,
     SharedModule,
   ],
-  providers: [AuthService],
+  providers: [],
   exports: [RouterModule],
 })
 export class AdminModule {}
