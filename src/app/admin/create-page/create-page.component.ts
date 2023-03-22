@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Post } from 'src/app/shared/ineterfaces';
 import { PostsService } from 'src/app/shared/services/posts.service';
+import { AlertService } from '../shared/services/alert.service';
 
 @Component({
   selector: 'app-create-page',
@@ -13,7 +14,8 @@ export class CreatePageComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private postsService: PostsService
+    private postsService: PostsService,
+    private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +48,7 @@ export class CreatePageComponent implements OnInit, OnDestroy {
 
     this.postsService.create(post).subscribe(() => {
       this.form.reset();
+      this.alertService.success('Пост бил создан!');
     });
   }
 }
